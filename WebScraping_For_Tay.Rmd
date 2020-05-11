@@ -1,0 +1,50 @@
+---
+title: "Web Scraping for Tay"
+output: pdf_document
+---
+
+```{r setup, echo=FALSE}
+#pull in libraries
+library(rvest)
+library(ggplot2)
+library(magrittr)
+```
+
+
+```{r cars}
+#to loop through all pages, create loop to go from 2-20, first entry should be blank
+#maybe need an if statement to start
+url <- 'https://www.loopnet.com/owner-financed-properties-for-sale/'
+
+webpage <- read_html(url)
+
+#strong is inside of ratings-imdb-rating in source code
+imdb.top.ratings <- html_nodes(webpage,'.ratings-imdb-rating strong')
+top.ratings.data <- html_text(imdb.top.ratings)
+head(top.ratings.data)
+top.ratings.data <- as.numeric(top.ratings.data)
+head(top.ratings.data)
+
+
+#getting the listing city, state
+descriptions <- html_nodes(webpage,'.listingDescription b')
+descriptions.data <- html_text(descriptions)
+head(descriptions.data)
+
+#paragraph description of the property
+descriptions <- html_nodes(webpage,'.propertyDescription')
+descriptions.data <- html_text(descriptions)
+head(descriptions.data)
+
+#start getting listing attributes
+descriptions <- html_nodes(webpage,'.listingAttributes tr')
+descriptions.data <- html_text(descriptions)
+head(descriptions.data)
+
+#attributes <- html_nodes(webpage, '.listingAttributes') %>% extract2(1) %>% html_nodes('Status')
+Status.attribute <- html_nodes(webpage, '.listingAttributes tr') %>% extract2(1)
+Status.attribute <- gsub("\r", "", gsub("\n", "", Status.attribute))
+attributes.data <- html_text(Status.attribute)
+head(attributes.data)
+```
+

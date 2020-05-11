@@ -1,0 +1,47 @@
+---
+title: "Web Scraping Practice"
+output: pdf_document
+---
+
+
+**Libraries and Ish**
+```{r setup, include=FALSE}
+library(rvest)
+library(ggplot2)
+```
+
+**And now it begins...**
+```{r, include=FALSE}
+url <- 'https://www.imdb.com/search/title?groups=top_250&sort=user_rating'
+
+webpage <- read_html(url)
+
+#strong is inside of ratings-imdb-rating in source code
+imdb.top.ratings <- html_nodes(webpage,'.ratings-imdb-rating strong')
+top.ratings.data <- html_text(imdb.top.ratings)
+head(top.ratings.data)
+top.ratings.data <- as.numeric(top.ratings.data)
+head(top.ratings.data)
+
+imdb.top.titles <- html_nodes(webpage, '.lister-item-header a')
+top.titles.data <- html_text(imdb.top.titles)
+head(top.titles.data)
+
+top.ratings.genre <- html_nodes(webpage, '.genre')
+top.genres.data <- html_text(top.ratings.genre)
+top.genres.data <- gsub("\n", "", top.genres.data)
+top.genres.data <- trimws(top.genres.data, "r")
+head(top.genres.data)
+
+top.ratings.runtime <- html_nodes(webpage, '.runtime')
+top.runtime.data <- html_text(top.ratings.runtime)
+top.runtime.data <- as.numeric(gsub(" min","",top.genres.runtime))
+head(top.genres.runtime)
+
+
+movies.df <- data.frame(Titles=top.titles.data, Ratings=top.ratings.data, Genre=top.genres.data, Runtime=top.runtime.data)
+```
+
+```{r, include = FALSE}
+qplot(data=movies.df, Ratings, fill=Genre)
+```
